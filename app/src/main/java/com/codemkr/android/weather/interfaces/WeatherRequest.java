@@ -4,9 +4,9 @@ import com.codemkr.android.weather.json.Weather;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import retrofit2.http.Url;
 
 public interface WeatherRequest {
-    @GET()
-    Call<Weather> getWeather(@Url String location);
+    @GET("v1/public/yql")
+    Call<Weather> getWeather(@Query("q") String location,
+                             @Query("format") String format);
 }

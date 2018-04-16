@@ -36,10 +36,11 @@ public class WeatherFetcher {
         String queryString = Constants.LOCATION_PARAM_START + mLocation + Constants.LOCATION_PARAM_END;
         Log.i(TAG, queryString);
         WeatherRequest request = mRetrofit.create(WeatherRequest.class);
-        Call<Weather> weatherCallback = request.getWeather(queryString);
+        Call<Weather> weatherCallback = request.getWeather(queryString, Constants.FORMAT_PARAM);
         weatherCallback.enqueue(new Callback<Weather>() {
             @Override
             public void onResponse(@NonNull Call<Weather> call, @NonNull Response<Weather> response) {
+                Log.i(TAG, call.request().toString());
                 if (response.isSuccessful()) {
                     Weather weather = response.body();
                     if (weather != null) {
