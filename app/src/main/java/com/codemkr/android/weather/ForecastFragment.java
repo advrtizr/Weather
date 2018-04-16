@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,11 +14,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.codemkr.android.weather.interfaces.OnRefreshStateListener;
 import com.codemkr.android.weather.json.Forecast;
 import com.codemkr.android.weather.json.Weather;
+
 import java.util.List;
 import java.util.UUID;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -54,6 +58,8 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
     TextView sunrise;
     @BindView(R.id.details_sunset)
     TextView sunset;
+    @BindView(R.id.swipe_container)
+    SwipeRefreshLayout refreshLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,6 +72,18 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.forecast_fragment, container, false);
         ButterKnife.bind(this, view);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                WeatherLab.getInstance().requestUpdate(mUUID, ForecastFragment.this);
+            }
+        });
+        refreshLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshLayout.setRefreshing(false);
+            }
+        });
         return view;
     }
 
@@ -75,33 +93,37 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
         WeatherLab.getInstance().requestUpdate(mUUID, this);
     }
 
-    private void initializeAdapter() {
-        if (mWeather != null) {
-            List<Forecast> forecastList = mWeather.getQuery().getResults().getChannel().getItem().getForecast();
+    private void initializeAdapter(Weather weather) {
+        List<Forecast> forecastList = weather.getQuery().getResults().getChannel().getItem().getForecast();
+        if (mForecastAdapter == null) {
             mForecastAdapter = new ForecastAdapter(getActivity(), forecastList);
             LinearLayoutManager horizontalLayout = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
             forecastRecycler.setLayoutManager(horizontalLayout);
             forecastRecycler.hasFixedSize();
             forecastRecycler.setAdapter(mForecastAdapter);
+        } else {
+            mForecastAdapter.updateList(forecastList);
+            mForecastAdapter.notifyDataSetChanged();
         }
+
     }
 
-    private void initializeData() {
-        String locationCity = mWeather.getQuery().getResults().getChannel().getLocation().getCity();
-        String locationCountry = mWeather.getQuery().getResults().getChannel().getLocation().getCountry();
+    private void initializeData(Weather weather) {
+        String locationCity = weather.getQuery().getResults().getChannel().getLocation().getCity();
+        String locationCountry = weather.getQuery().getResults().getChannel().getLocation().getCountry();
         String locationSummary = locationCity + ", " + locationCountry;
-        String temperatureQuery = mWeather.getQuery().getResults().getChannel().getItem().getCondition().getTemp() + "\u00B0";
-        String conditionsQuery = mWeather.getQuery().getResults().getChannel().getItem().getCondition().getText();
-        String codeQuery = mWeather.getQuery().getResults().getChannel().getItem().getCondition().getCode();
-        String feelsTemperatureQuery = tempConverter(mWeather.getQuery().getResults().getChannel().getWind().getChill()) + "\u00B0";
-        String directionQuery = windDirection(mWeather.getQuery().getResults().getChannel().getWind().getDirection());
-        String speedQuery = mWeather.getQuery().getResults().getChannel().getWind().getSpeed();
-        String speedUnits = mWeather.getQuery().getResults().getChannel().getUnits().getSpeed();
+        String temperatureQuery = weather.getQuery().getResults().getChannel().getItem().getCondition().getTemp() + "\u00B0";
+        String conditionsQuery = weather.getQuery().getResults().getChannel().getItem().getCondition().getText();
+        String codeQuery = weather.getQuery().getResults().getChannel().getItem().getCondition().getCode();
+        String feelsTemperatureQuery = tempConverter(weather, weather.getQuery().getResults().getChannel().getWind().getChill()) + "\u00B0";
+        String directionQuery = windDirection(weather.getQuery().getResults().getChannel().getWind().getDirection());
+        String speedQuery = weather.getQuery().getResults().getChannel().getWind().getSpeed();
+        String speedUnits = weather.getQuery().getResults().getChannel().getUnits().getSpeed();
         String speedSummary = speedQuery + " " + speedUnits;
-        String humidityQuery = mWeather.getQuery().getResults().getChannel().getAtmosphere().getHumidity();
-        String pressureQuery = pressureDivide(mWeather.getQuery().getResults().getChannel().getAtmosphere().getPressure());
-        String sunriseQuery = mWeather.getQuery().getResults().getChannel().getAstronomy().getSunrise();
-        String sunsetQuery = mWeather.getQuery().getResults().getChannel().getAstronomy().getSunset();
+        String humidityQuery = weather.getQuery().getResults().getChannel().getAtmosphere().getHumidity();
+        String pressureQuery = pressureDivide(weather.getQuery().getResults().getChannel().getAtmosphere().getPressure());
+        String sunriseQuery = weather.getQuery().getResults().getChannel().getAstronomy().getSunrise();
+        String sunsetQuery = weather.getQuery().getResults().getChannel().getAstronomy().getSunset();
 
         location.setText(locationSummary);
         temperature.setText(temperatureQuery);
@@ -117,8 +139,8 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
         conditionImage.setImageResource(resource);
     }
 
-    private String tempConverter(String temperature) {
-        String units = (mWeather.getQuery().getResults().getChannel().getUnits().getTemperature()).toLowerCase();
+    private String tempConverter(Weather weather, String temperature) {
+        String units = (weather.getQuery().getResults().getChannel().getUnits().getTemperature()).toLowerCase();
         if (units.equals(Constants.CELSIUS.toLowerCase())) {
             int t = Integer.parseInt(temperature);
             int result = (t - 32) * 5 / 9;
@@ -156,9 +178,9 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
 
     @Override
     public void updateUI() {
-        mWeather = WeatherLab.getInstance().getWeather(mUUID);
-        initializeAdapter();
-        initializeData();
+        Weather weather = WeatherLab.getInstance().getWeather(mUUID);
+        initializeAdapter(weather);
+        initializeData(weather);
     }
 
     public static Fragment newInstance(UUID id) {

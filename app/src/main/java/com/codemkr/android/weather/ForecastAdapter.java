@@ -44,6 +44,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
         return forecastList.size();
     }
 
+    public void updateList(List<Forecast> list){
+        forecastList = list;
+    }
+
     class ForecastViewHolder extends RecyclerView.ViewHolder {
 
         TextView forecastDay;

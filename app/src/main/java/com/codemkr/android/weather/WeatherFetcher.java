@@ -6,7 +6,9 @@ import android.util.Log;
 import com.codemkr.android.weather.interfaces.OnResponseListener;
 import com.codemkr.android.weather.interfaces.WeatherRequest;
 import com.codemkr.android.weather.json.Weather;
+
 import java.util.UUID;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,7 +38,7 @@ public class WeatherFetcher {
         String queryString = Constants.LOCATION_PARAM_START + mLocation + Constants.LOCATION_PARAM_END;
         Log.i(TAG, queryString);
         WeatherRequest request = mRetrofit.create(WeatherRequest.class);
-        Call<Weather> weatherCallback = request.getWeather(queryString, Constants.FORMAT_PARAM);
+        Call<Weather> weatherCallback = request.getWeather(queryString, Constants.UNIT_PARAM, Constants.FORMAT_PARAM);
         weatherCallback.enqueue(new Callback<Weather>() {
             @Override
             public void onResponse(@NonNull Call<Weather> call, @NonNull Response<Weather> response) {
@@ -52,8 +54,8 @@ public class WeatherFetcher {
 
             @Override
             public void onFailure(Call<Weather> call, Throwable t) {
-                    mResponseListener.onFailure();
-                    Log.i(TAG, call.toString());
+                mResponseListener.onFailure();
+                Log.i(TAG, call.toString());
             }
         });
     }
