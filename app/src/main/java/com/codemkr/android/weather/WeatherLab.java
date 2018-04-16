@@ -3,6 +3,7 @@ package com.codemkr.android.weather;
 import com.codemkr.android.weather.interfaces.OnRefreshStateListener;
 import com.codemkr.android.weather.interfaces.OnResponseListener;
 import com.codemkr.android.weather.json.Weather;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -12,46 +13,45 @@ public class WeatherLab implements OnResponseListener {
     private List<Weather> mWeathers;
     private OnRefreshStateListener mListener;
 
-    private WeatherLab(){
+    private WeatherLab() {
         mWeathers = new ArrayList<>();
     }
 
-    public static WeatherLab getInstance(){
-        if(sWeatherLab == null){
+    public static WeatherLab getInstance() {
+        if (sWeatherLab == null) {
             sWeatherLab = new WeatherLab();
         }
         return sWeatherLab;
     }
 
-    public void addWeather(Weather weather){
+    public void addWeather(Weather weather) {
         mWeathers.add(weather);
     }
 
-    public void updateWeather(Weather updatedWeather){
+    public void updateWeather(Weather updatedWeather) {
         UUID id = updatedWeather.getUUID();
-        for(Weather weather : mWeathers){
-            if(weather.getUUID().equals(id)){
-                mWeathers.remove(weather);
-                mWeathers.add(updatedWeather);
+        for (int i = 0; i < mWeathers.size(); i++) {
+            if (mWeathers.get(i).getUUID().equals(id)) {
+                mWeathers.set(i, updatedWeather);
             }
         }
     }
 
-    public void requestUpdate(Weather weather, OnRefreshStateListener listener){
+    public void requestUpdate(UUID uuid, OnRefreshStateListener listener) {
         mListener = listener;
+        Weather weather = getWeather(uuid);
         WeatherFetcher fetcher = new WeatherFetcher(weather, this);
         fetcher.makeRequest();
     }
 
-    public List<Weather> getWeathers(){
+    public List<Weather> getWeathers() {
         return mWeathers;
     }
 
-    public Weather getWeather(Weather weather){
-        UUID id = weather.getUUID();
-        for(Weather w : mWeathers){
-            if(w.getUUID().equals(id)){
-                return w;
+    public Weather getWeather(UUID id) {
+        for (Weather weather : mWeathers) {
+            if (weather.getUUID().equals(id)) {
+                return weather;
             }
         }
         return null;
@@ -60,7 +60,7 @@ public class WeatherLab implements OnResponseListener {
     @Override
     public void onSuccess(Weather weather) {
         updateWeather(weather);
-        mListener.refresh();
+        mListener.updateUI();
     }
 
     @Override

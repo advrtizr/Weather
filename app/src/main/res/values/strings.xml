@@ -1,3 +1,25 @@
 <resources>
-    <string name="app_name">Weather</string>
+    <string name="app_name">Погода</string>
+    <string name="location">Location</string>
+    <string name="time">Time</string>
+    <string name="conditions">Conditions</string>
+    <string name="not_available">N/A</string>
+    <string name="select_country">Select country</string>
+    <string name="select_city">Select city</string>
+    <string name="select_units">Select units</string>
+    <string name="submit_btn">Submit</string>
+    <string name="menu_settings">Settings</string>
+    <string name="refresh_btn">Refresh</string>
+    <string name="settings_location_title">Местоположение</string>
+    <string name="settings_unit_title">Единицы температуры</string>
+    <string name="celsius">Цельсий</string>
+    <string name="fahrenheit">Фаренгейт</string>
+    <string name="location_clear">Clear</string>
+    <string name="main_refresh">Refresh</string>
+    <string name="settings_default_value">По умолчанию единица измерения Цельсий</string>
+    <string name="snackbar_refreshed">Обновлено</string>
+    <string name="snackbar_connection_error">Пожалуйста, проверьте подключение</string>
+    <string name="search_city">Поиск…</string>
+    <string name="warning">Вы не выбрали город</string>
+    <string name="transition_temperature">transition_temperature</string>
 </resources>
