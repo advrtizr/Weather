@@ -39,9 +39,13 @@ public class ForecastActivity extends AppCompatActivity implements OnRefreshStat
                 WeatherLab.getInstance().requestUpdate(mWeather, ForecastActivity.this);
             }
         });
-        WeatherLab.getInstance().requestUpdate(mWeather, ForecastActivity.this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        WeatherLab.getInstance().requestUpdate(mWeather, ForecastActivity.this);
+    }
 
     @Override
     public void refresh() {
