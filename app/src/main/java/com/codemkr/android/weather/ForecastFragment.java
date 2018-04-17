@@ -74,7 +74,7 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WeatherLab.getInstance().requestUpdate(mUUID, ForecastFragment.this);
+                WeatherLab.getInstance(getActivity()).requestUpdate(mUUID, ForecastFragment.this);
             }
         });
         refreshLayout.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +89,7 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
     @Override
     public void onResume() {
         super.onResume();
-        WeatherLab.getInstance().requestUpdate(mUUID, this);
+        WeatherLab.getInstance(getActivity()).requestUpdate(mUUID, this);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
     }
 
     private void initializeAdapter() {
-        Weather weather = WeatherLab.getInstance().getWeather(mUUID);
+        Weather weather = WeatherLab.getInstance(getActivity()).getWeather(mUUID);
         List<Forecast> forecastList = weather.getQuery().getResults().getChannel().getItem().getForecast();
         if (mForecastAdapter == null) {
             mForecastAdapter = new ForecastAdapter(getActivity(), forecastList);
@@ -116,7 +116,7 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
     }
 
     private void initializeData() {
-        Weather weather = WeatherLab.getInstance().getWeather(mUUID);
+        Weather weather = WeatherLab.getInstance(getActivity()).getWeather(mUUID);
         String locationCity = weather.getQuery().getResults().getChannel().getLocation().getCity();
         String locationCountry = weather.getQuery().getResults().getChannel().getLocation().getCountry();
         String locationSummary = locationCity + ", " + locationCountry;

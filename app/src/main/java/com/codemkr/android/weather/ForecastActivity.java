@@ -24,9 +24,9 @@ public class ForecastActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mWeather = new Weather();
         mWeather.setLocation("kiev");
-        WeatherLab.getInstance().addWeather(mWeather);
+        WeatherLab.getInstance(this).addWeather(mWeather);
 
-        mWeatherList = WeatherLab.getInstance().getWeathers();
+        mWeatherList = WeatherLab.getInstance(this).getWeathers();
         FragmentManager manager = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(manager) {
             @Override
