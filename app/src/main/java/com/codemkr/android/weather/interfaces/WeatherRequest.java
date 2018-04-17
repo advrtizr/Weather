@@ -8,6 +8,6 @@ import retrofit2.http.Query;
 public interface WeatherRequest {
     @GET("v1/public/yql")
     Call<Weather> getWeather(@Query("q") String location,
-                             @Query("u") String unit,
-                             @Query("format") String format);
+                             @Query("format") String format,
+                             @Query("u") String unit);
 }

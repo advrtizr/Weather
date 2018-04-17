@@ -30,7 +30,6 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
     private static final String TAG = "ForecastFragment";
     private static final String WEATHER_ID_ARG = "weather_id";
 
-    private Weather mWeather;
     private UUID mUUID;
     private ForecastAdapter mForecastAdapter;
 
@@ -64,7 +63,7 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUUID = (UUID) getArguments().getSerializable(WEATHER_ID_ARG);
+        mUUID = (UUID) (getArguments() != null ? getArguments().getSerializable(WEATHER_ID_ARG) : null);
     }
 
     @Nullable
@@ -93,7 +92,15 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
         WeatherLab.getInstance().requestUpdate(mUUID, this);
     }
 
-    private void initializeAdapter(Weather weather) {
+    @Override
+    public void updateUI() {
+        initializeAdapter();
+        initializeData();
+        refreshLayout.setRefreshing(false);
+    }
+
+    private void initializeAdapter() {
+        Weather weather = WeatherLab.getInstance().getWeather(mUUID);
         List<Forecast> forecastList = weather.getQuery().getResults().getChannel().getItem().getForecast();
         if (mForecastAdapter == null) {
             mForecastAdapter = new ForecastAdapter(getActivity(), forecastList);
@@ -108,14 +115,16 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
 
     }
 
-    private void initializeData(Weather weather) {
+    private void initializeData() {
+        Weather weather = WeatherLab.getInstance().getWeather(mUUID);
         String locationCity = weather.getQuery().getResults().getChannel().getLocation().getCity();
         String locationCountry = weather.getQuery().getResults().getChannel().getLocation().getCountry();
         String locationSummary = locationCity + ", " + locationCountry;
         String temperatureQuery = weather.getQuery().getResults().getChannel().getItem().getCondition().getTemp() + "\u00B0";
         String conditionsQuery = weather.getQuery().getResults().getChannel().getItem().getCondition().getText();
         String codeQuery = weather.getQuery().getResults().getChannel().getItem().getCondition().getCode();
-        String feelsTemperatureQuery = tempConverter(weather, weather.getQuery().getResults().getChannel().getWind().getChill()) + "\u00B0";
+        String units = (weather.getQuery().getResults().getChannel().getUnits().getTemperature()).toLowerCase();
+        String feelsTemperatureQuery = tempConverter(units, weather.getQuery().getResults().getChannel().getWind().getChill()) + "\u00B0";
         String directionQuery = windDirection(weather.getQuery().getResults().getChannel().getWind().getDirection());
         String speedQuery = weather.getQuery().getResults().getChannel().getWind().getSpeed();
         String speedUnits = weather.getQuery().getResults().getChannel().getUnits().getSpeed();
@@ -139,8 +148,7 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
         conditionImage.setImageResource(resource);
     }
 
-    private String tempConverter(Weather weather, String temperature) {
-        String units = (weather.getQuery().getResults().getChannel().getUnits().getTemperature()).toLowerCase();
+    private String tempConverter(String units, String temperature) {
         if (units.equals(Constants.CELSIUS.toLowerCase())) {
             int t = Integer.parseInt(temperature);
             int result = (t - 32) * 5 / 9;
@@ -176,12 +184,6 @@ public class ForecastFragment extends Fragment implements OnRefreshStateListener
         return String.valueOf(p);
     }
 
-    @Override
-    public void updateUI() {
-        Weather weather = WeatherLab.getInstance().getWeather(mUUID);
-        initializeAdapter(weather);
-        initializeData(weather);
-    }
 
     public static Fragment newInstance(UUID id) {
         Bundle args = new Bundle();

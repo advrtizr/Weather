@@ -38,7 +38,7 @@ public class WeatherFetcher {
         String queryString = Constants.LOCATION_PARAM_START + mLocation + Constants.LOCATION_PARAM_END;
         Log.i(TAG, queryString);
         WeatherRequest request = mRetrofit.create(WeatherRequest.class);
-        Call<Weather> weatherCallback = request.getWeather(queryString, Constants.UNIT_PARAM, Constants.FORMAT_PARAM);
+        Call<Weather> weatherCallback = request.getWeather(queryString, Constants.FORMAT_PARAM, Constants.UNIT_PARAM);
         weatherCallback.enqueue(new Callback<Weather>() {
             @Override
             public void onResponse(@NonNull Call<Weather> call, @NonNull Response<Weather> response) {
@@ -47,6 +47,7 @@ public class WeatherFetcher {
                     Weather weather = response.body();
                     if (weather != null) {
                         weather.setUUID(mUUID);
+                        weather.setLocation(mLocation);
                         mResponseListener.onSuccess(weather);
                     }
                 }

@@ -28,7 +28,7 @@ public class WeatherLab implements OnResponseListener {
         mWeathers.add(weather);
     }
 
-    public void updateWeather(Weather updatedWeather) {
+    private void updateWeather(Weather updatedWeather) {
         UUID id = updatedWeather.getUUID();
         for (int i = 0; i < mWeathers.size(); i++) {
             if (mWeathers.get(i).getUUID().equals(id)) {
