@@ -6,7 +6,9 @@ public class WeatherDBSchema {
     }
     public static class Cols{
         public static final String UUID = "uuid";
+        public static final String IS_UPDATED = "is_updated";
         public static final String LOCATION_REQUEST = "location";
+        public static final String WEATHER_QUERY = "weather_query";
         public static final String LOCATION_CITY = "city";
         public static final String LOCATION_COUNTRY = "country";
         public static final String TEMPERATURE_FORECAST = "temperature_forecast";

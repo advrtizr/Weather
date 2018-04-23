@@ -26,7 +26,7 @@ public class WeatherFetcher {
 
     public WeatherFetcher(Weather weather, OnResponseListener listener) {
         mUUID = weather.getUUID();
-        mLocation = weather.getLocation();
+        mLocation = weather.getLocationKey();
         mResponseListener = listener;
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
@@ -47,7 +47,8 @@ public class WeatherFetcher {
                     Weather weather = response.body();
                     if (weather != null) {
                         weather.setUUID(mUUID);
-                        weather.setLocation(mLocation);
+                        weather.setLocationKey(mLocation);
+                        weather.setUpdated(weather.isUpdated());
                         mResponseListener.onSuccess(weather);
                     }
                 }

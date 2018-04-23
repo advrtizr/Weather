@@ -19,22 +19,29 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + WeatherTable.TABLE_NAME + "(" + " _id integer primary key autoincrement," +
                 Cols.UUID + ", " +
+                Cols.IS_UPDATED + ", " +
                 Cols.LOCATION_REQUEST + ", " +
-                Cols.LOCATION_CITY + ", " +
-                Cols.LOCATION_COUNTRY + ", " +
-                Cols.TEMPERATURE_ACTUAL + ", " +
-                Cols.TEMPERATURE_FORECAST + ", " +
-                Cols.UNIT + ", " +
-                Cols.CODE + ", " +
-                Cols.CONDITIONS + ", " +
-                Cols.HUMIDITY + ", " +
-                Cols.PRESSURE + ", " +
-                Cols.WIND_DIRECTION + ", " +
-                Cols.WIND_SPEED + ", " +
-                Cols.WIND_SPEED_UNITS + ", " +
-                Cols.SUNRISE_TIME + ", " +
-                Cols.SUNSET_TIME + ")"
+                Cols.WEATHER_QUERY + ")"
         );
+//        db.execSQL("create table " + WeatherTable.TABLE_NAME + "(" + " _id integer primary key autoincrement," +
+//                Cols.UUID + ", " +
+//                Cols.IS_UPDATED + ", " +
+//                Cols.LOCATION_REQUEST + ", " +
+//                Cols.LOCATION_CITY + ", " +
+//                Cols.LOCATION_COUNTRY + ", " +
+//                Cols.TEMPERATURE_ACTUAL + ", " +
+//                Cols.TEMPERATURE_FORECAST + ", " +
+//                Cols.UNIT + ", " +
+//                Cols.CODE + ", " +
+//                Cols.CONDITIONS + ", " +
+//                Cols.HUMIDITY + ", " +
+//                Cols.PRESSURE + ", " +
+//                Cols.WIND_DIRECTION + ", " +
+//                Cols.WIND_SPEED + ", " +
+//                Cols.WIND_SPEED_UNITS + ", " +
+//                Cols.SUNRISE_TIME + ", " +
+//                Cols.SUNSET_TIME + ")"
+//        );
     }
 
     @Override

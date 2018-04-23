@@ -11,7 +11,8 @@ public class Weather {
     @Expose
     private Query query;
     private UUID mUUID;
-    private String mLocation;
+    private boolean mUpdated;
+    private String mLocationKey;
 
     public Weather() {
         this(UUID.randomUUID());
@@ -29,12 +30,20 @@ public class Weather {
         mUUID = UUID;
     }
 
-    public String getLocation() {
-        return mLocation;
+    public String getLocationKey() {
+        return mLocationKey;
     }
 
-    public void setLocation(String location) {
-        mLocation = location;
+    public void setLocationKey(String location) {
+        mLocationKey = location;
+    }
+
+    public boolean isUpdated() {
+        return mUpdated;
+    }
+
+    public void setUpdated(boolean updated) {
+        mUpdated = updated;
     }
 
     public Query getQuery() {
